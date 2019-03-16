@@ -3,20 +3,19 @@ const Monster = require('../models/monster')
 const City = require('../models/city')
 
 module.exports = () => {
-  readline = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  })
-  
-  const question = 'Hello my lord. How many monster do you want to unleash today?'
-  readline.question(question, async (monsters) => {
-    console.log(`${monsters} monsters will be unleashed.`)
+  return new Promise((resolve, reject) => {
+    readline = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
     
-    readline.close()
-
-    await createMonsters(monsters)
-
-    return Promise.resolve()
+    const question = 'Hello my lord. How many monster do you want to unleash today?'
+    readline.question(question, async (monsters) => {
+      console.log(`${monsters} monsters will be unleashed.`)
+      await createMonsters(monsters)
+      readline.close()
+      resolve()
+    })
   })
 }
 
@@ -31,7 +30,7 @@ const createMonsters = async (monsters) => {
 
     let city = await City.findOne().skip(random)
 
-    const monster = await new Monster({ city }).save()
+    const monster = await new Monster({ city: city._id }).save()
     
     city.monsters.push(monster)
     city.monstersLength+=1

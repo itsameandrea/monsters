@@ -1,28 +1,27 @@
-const LineByLineReader = require('line-by-line')
-const readerStream = new LineByLineReader('./maps/world_map_small.txt')
+const fs = require('fs')
 
 module.exports = () => {
   return new Promise((resolve, reject) => {
-    const cities = []
+    let lines = fs.readFileSync('./maps/world_map_medium.txt', 'utf8').split('\n')
+    
+    lines = lines.filter((line) => line.trim() !== '')
 
-    readerStream
-      .on('error', (err) => reject(err))
-      .on('line', async (line) => {
-          const cityDetails = line.split(' ')
+    const cities = lines.map((line) => {
+      if (line.trim() !== '') {
+        const cityDetails = line.split(' ')
+        
+        const city = {
+          name: cityDetails.shift()
+        }
 
-          const city = {
-            name: cityDetails.shift()
-          }
-
-          cityDetails.forEach(chunk => {
-            const directions = chunk.split('=')
-            city[directions[0]] = directions[1]
-          })
-
-          cities.push(city)
-      })
-      .on('end', () => {
-        resolve(cities)
-      })
+        cityDetails.forEach(chunk => {
+          const directions = chunk.split('=')
+          city[directions[0]] = directions[1]
+        })
+  
+        return city
+      }
+    })
+    resolve(cities)
   })
 }

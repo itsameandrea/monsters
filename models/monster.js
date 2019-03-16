@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 
 const monsterSchema = new mongoose.Schema({
   city: {
-    type: Object
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'City'
   }
 })
 
