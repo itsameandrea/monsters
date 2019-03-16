@@ -21,8 +21,8 @@ module.exports = async () => {
 async function eraseCityFromMap (city) {
   return new Promise(async (resolve, reject) => {
     await City.deleteOne({ _id: city._id })
-
-    console.log(`${city.name}(${city._id}) has been destroyed by ${city.monsters.join(', ')}`)
+    const names = city.monsters.map((mon) => mon.name).join(', ')
+    console.log(`${city.name}(${city._id}) has been destroyed by ${names}`)
 
     const cities = await City.find({ $or: [
       { north: city.name },
@@ -50,12 +50,10 @@ async function eraseCityFromMap (city) {
 }
 
 async function killMonsters (city) {
-  return new Promise(async (resolve, reject) => {
-    const monsters = city.monsters.map((monster) => monster._id)
-    
-    monsters.forEach(async (monster) => {
+  return new Promise(async (resolve, reject) => {    
+    city.monsters.forEach(async (monster) => {
       await Monster.deleteOne({_id: monster._id})
-      console.log(`${monster} has died in the battle`)
+      console.log(`${monster.name} has died in the battle`)
     })
 
     resolve()
@@ -109,7 +107,7 @@ async function moveMonsters () {
 
 async function playRound () {
   return new Promise(async (resolve, reject) => {
-    const cities = await City.find({ monstersLength: { $gt: 1 }}).populate('monsters', '_id')
+    const cities = await City.find({ monstersLength: { $gt: 1 }}).populate('monsters', 'name')
     const monsters = await Monster.find().populate('city', 'north east west south')
     
     cities.forEach(async (city) => {

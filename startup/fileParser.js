@@ -2,7 +2,7 @@ const fs = require('fs')
 
 module.exports = () => {
   return new Promise((resolve, reject) => {
-    let lines = fs.readFileSync('./maps/world_map_medium.txt', 'utf8').split('\n')
+    let lines = fs.readFileSync('./maps/world_map_small.txt', 'utf8').split('\n')
     
     lines = lines.filter((line) => line.trim() !== '')
 
