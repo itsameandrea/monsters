@@ -1,6 +1,7 @@
 let readline = require('readline')
 const Monster = require('../models/monster')
 const City = require('../models/city')
+const axios = require('axios')
 
 module.exports = () => {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,9 @@ const createMonsters = async (monsters) => {
 
     let city = await City.findOne().skip(random)
 
-    const monster = await new Monster({ city: city._id }).save()
+    const { data } = await axios.get('http://names.drycodes.com/1?nameOptions=starwarsFirstNames')
+  
+    const monster = await new Monster({ city: city._id, name: data[0] }).save()
     
     city.monsters.push(monster)
     city.monstersLength+=1
